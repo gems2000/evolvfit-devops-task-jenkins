@@ -1,5 +1,5 @@
 pipeline {
-  agent { docker { image 'python:3.9.4' } }
+  agent { docker { image 'python:3.7.2' } }
   stages {
     stage('build') {
       steps {
@@ -8,13 +8,8 @@ pipeline {
     }
     stage('test') {
       steps {
-        sh 'py.test --junitxml results.xml tests.py'
-      }
-      post {
-        always {
-          junit 'test-reports/results.xml'
-        }
-      }    
+        sh 'python3 test.py'
+      }   
     }
   }
 }

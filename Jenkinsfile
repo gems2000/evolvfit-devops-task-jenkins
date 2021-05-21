@@ -8,11 +8,11 @@ pipeline {
     }
     stage('test') {
       steps {
-        sh 'python test.py'
+        sh 'py.test --junitxml results.xml tests.py'
       }
       post {
         always {
-          junit 'test-reports/*.xml'
+          junit 'test-reports/results.xml'
         }
       }    
     }

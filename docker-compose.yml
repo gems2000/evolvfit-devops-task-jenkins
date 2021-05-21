@@ -3,7 +3,7 @@ services:
   jenkins:
     image: jenkinsci/blueocean
     environment:
-      #### WINDOWS ONLY ####
+     
       - DOCKER_HOST=tcp://host.docker.internal:2375
     user: root
     ports:
@@ -11,4 +11,4 @@ services:
       - "8443:8443"
       - "50000:50000"
     volumes:
-      - ./jenkins_data:/var/jenkins_home
+      - /mnt/d/Projects/jenkins_data:/var/jenkins_home

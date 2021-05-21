@@ -61,6 +61,61 @@ I'm assuming, we have a system preinstalled with **Docker Desktop** as well as *
 
  - Bring up the environment by simply typing: `docker-compose up`. This will print out the initial password we can use to bring up an environment.
  - Once logged in, you can now create the initial [**Jenkins**](https://jenkins.io/) account. I typically use `gems2807` user for my local environments. Afterward, you can create pipelines.
+
+## Code Details
+
+These tests will use a  [**xUnit**](https://en.wikipedia.org/wiki/XUnit)  style of tests with the  `unittest`  library that comes bundled with the install of Python. To get started with  `unittest`, you want to create a class that is inherited from the  `unittest.TestCase`  class, and then create methods that begin with  `test_`  prefix for each of your tests.
+
+In this example, we need to create a  `setUp()`  method that uses your instances of the  `Flask`  class, and call the  `instance_name.app.test_client()`. As our instance is called  `app`  (from  `app.py`), we will then use  `app.app.test_client()`. This way when calling the  `self.app.get()`  method, it will utilize your instance of the  `Flask`  class from your code logic.
+
+The  [**test_client**](http://flask.pocoo.org/docs/1.0/api/#flask.Flask.test_client)  (`app.test_client()`) is a method provided the  [**Flask application object**](http://flask.pocoo.org/docs/1.0/api/), which creates a test client for the application. This is what we use in conjunction with  `unittest`  and asserts.
+
+When calling the  `get()`  method, the data returned is in the  `bytearray`, so we must use b-string or  `b'string'`  for comparisons. In one of the tests,  `test_hello_name()`, we use an f-string (`f'string'`) with the mock data of  `Simon`, which we coerce to a  `bytearray`  for the final comparison.
+
+## Running the Tests
+
+To run the tests, we simply run something like:
+
+    ./test.py
+
+We’ll get some output like this:
+
+        Running the tests
+        --------------------------------------------------------------------  
+        ...  
+        --------------------------------------------------------------------  
+        Ran 3 tests in 0.009s  
+          
+        OK
+
+#  Jenkins Pipeline
+
+Now that we have our web application and unit tests, we can create a  [**Jenkins**](https://jenkins.io/)  CI Pipeline by creating a  `Jenkinsfile`. The  `Jenkinsfile`  is a  [**Groovy**](http://groovy-lang.org/)  script, and can use a  [**DSL**](https://en.wikipedia.org/wiki/Domain-specific_language)-like syntax to define our stages and shell instructions.
+
+## The Jenkinsfile
+
+We’ll have two stages:  _build_  and  _test_  for our current pipeline. Use this bash command to create the  `Jenkinsfile`:
+
+    cat <<-'JENKINSFILE' > Jenkinsfile  
+    pipeline {  
+      agent { docker { image 'python:3.7.2' } }  
+      stages {  
+        stage('build') {  
+          steps {  
+            sh 'pip install -r requirements.txt'  
+          }  
+        }  
+        stage('test') {  
+          steps {  
+            sh 'python test.py'  
+          }     
+        }  
+      }  
+    }  
+    JENKINSFILE
+
+When this is used by a  [**Jenkins**](https://jenkins.io/)  agent, it will download a  [**Docker**](https://www.docker.com/)  image with  [**Python**](https://www.python.org/)  environment installed. For  _build_  and  _test_  stages, the pipeline will run a shell command, similar to have we have already ran in our previous steps, in the  [**Python**](https://www.python.org/)  container.
+
 ## Creating a Pipeline Steps
 
 To create the repository on your system :-
